@@ -1,0 +1,11 @@
+*.dat
+*.aux
+*.bcf
+*.log
+*.nav
+*.out
+*.pdf
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc

@@ -10,6 +10,9 @@ function fft_center, array, direction, DIMENSION=dimension, DOUBLE=double, $
 end
 
 pro filtro_wiener
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;  Signal  ;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ntime=1001
   ff=100
   ;; Define the times array.
@@ -20,44 +23,58 @@ pro filtro_wiener
   noise=0.3*randomu(a, ntime)*cos(10*randomu(a, ntime)*time)
   ;; Signal + noise.
   sign_noise=sign+noise
-
-  window, 0
-  plot, time, sign
-
-  window, 1
-  plot, time, sign_noise
-  
-  ;; Its Fourier transform.
-  ft=fft(sign_noise)
-
   ;; The frequencies array, adapted from FFT documentation.
   x = findgen((ntime - 1)/2) + 1
   if ((ntime mod 2) eq 0) then $
      freq = [0.0, x, ntime/2, -ntime/2 + x]/(ntime/ff)*2*!dpi $
   else $
      freq = [0.0, x, -(ntime/2 + 1) + x]/(ntime/ff)*2*!dpi
+  ;; Its Fourier transform.
+  ft=fft(sign_noise)
 
   ;; Determine the power spectra of the signal and the noise.
   signal_power_spectrum=abs(fft(sign))^2
   noise_power_spectrum=abs(fft(noise))^2
   ;; Calculate the Wiener filter.
-  filter1=signal_power_spectrum/(signal_power_spectrum + noise_power_spectrum)
+  filter=signal_power_spectrum/(signal_power_spectrum + noise_power_spectrum)
   ;; Get the filtered signal + noise.
-  synt1=fft(ft*filter1, 1)
-  window, 2
-  plot, time, synt1
+  result=fft(ft*filter, 1)
 
-  ;; Let's do the same but with a wrong signal function.
-  wrong_signal_power_spectrum=abs(fft((10^(-0.85)*time)^4))^2
-  filter2=signal_power_spectrum/(wrong_signal_power_spectrum + noise_power_spectrum)
-  synt2=fft(ft*filter2, 1)
-  window, 3
-  plot, time, synt2
+  ;; Write relevant data to file.
+  openw, 1, 'signal.dat'
+  for ii = 0L, ntime - 1L do begin
+     printf, 1, time[ii], freq[ii], sign[ii], noise[ii], sign_noise[ii], $
+             abs(ft[ii]), real_part(result[ii]), format='(7f20.8)'
+  endfor
+  close, 1
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;  Image  ;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Read the Lena image.
+  read_jpeg, "lena.jpg", lena, /grayscale
+  ;; Add a large noise to Lena.
+  imgnoise=2d*mean(lena)*randomu(systime(/seconds), 512, 512)
+  degraded_img=lena + imgnoise
+  ;; Fourier transform of the degraded image.
+  ftimg=fft(degraded_img)
+  ;; For the Wiener filter, use Elaine picture.
+  read_jpeg, "elaine.jpg", elaine, /grayscale
+  ;; Determine the power spectrum of Elaine and the noise.
+  elaine_power_spectrum=abs(fft(elaine))^2
+  imgnoise=2d*mean(lena)*randomu(systime(/seconds), 512, 512)
+  imgnoise_power_spectrum=abs(fft(imgnoise))^2
+  ;; Calculate the Wiener filter.
+  filter=elaine_power_spectrum/(elaine_power_spectrum + imgnoise_power_spectrum)
+  ;; Get the filtered picture.
+  resultimg=fft(ftimg*filter, 1)
 
-  window, 4
-  plot, freq, wrong_signal_power_spectrum, xrange=[-20,20]
-
-  window, 5
-  plot, freq, signal_power_spectrum, xrange=[-20,20]
+  ;; Write images power spectra to file.
+  openw, 1, 'elaine.dat'
+  printf, 1, shift(elaine_power_spectrum, 257, 257), format='(512(f10.3,x))'
+  close, 1
+  openw, 1, 'lena.dat'
+  printf, 1, shift(abs(fft(lena))^2, 257, 257), format='(512(f10.3,x))'
+  close, 1
   return
 end
