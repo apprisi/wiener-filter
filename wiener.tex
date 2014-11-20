@@ -9,17 +9,8 @@
 \usepackage[utf8]{inputenc}
 
 \usepackage[hyperref,backend=biber,maxbibnames=4,firstinits=true]{biblatex}
-\usepackage{graphicx,siunitx}
+\usepackage{graphicx,tikz,listings}
 \usepackage[font=scriptsize,labelformat=empty]{caption}
-
-\DeclareSIUnit\parsec{pc}
-\DeclareSIUnit\clight{\text{\ensuremath{c}}}
-\sisetup{per-mode=symbol,
-  inter-unit-separator={}\cdot{},
-  exponent-product=\cdot,
-  output-product=\cdot,
-  separate-uncertainty=true
-}
 
 \addbibresource{bibliography.bib}
 \newcommand{\arxiv}[1]{{\usebeamercolor[fg]{bibliography entry note}
@@ -27,14 +18,7 @@
 \newcommand{\doi}[1]{{\usebeamercolor[fg]{bibliography entry note}
     \href{http://dx.doi.org/#1}{\textsc{doi}: \texttt{#1}}}}
 
-\DeclareMathOperator{\e}{\mathrm{e}}
-\DeclareMathOperator{\uimm}{\mathrm{i}} % unità immaginaria
-\renewcommand{\phi}{\varphi}
-
-\newcommand{\advice}{\includegraphics[height=0.8em]{figures/light-bulb}}
-\newcommand{\warning}{\includegraphics[height=0.6em]{figures/Warning-icon}}
-
-\title{Wiener Filter in Image Processing}
+\title{Wiener Filtering}
 
 \author{Mosè Giordano}
 \date{26 November 2014}
@@ -134,13 +118,149 @@
 \setbeamercolor{framesubtitle}{fg=white, bg=ta2gray}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\lstdefinelanguage{gdl}{
+  morekeywords={abs,cos,findgen,fft,mean,randomu,read_jpeg,sin,systime},
+  sensitive=false,
+  morecomment=[l]{;},
+  morestring=[b]",
+}
+
+\lstset{
+  language=gdl,
+  basicstyle=\scriptsize\ttfamily,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{red},
+  stringstyle=\color{purple}\itshape,
+%  columns=flexible,
+  showstringspaces=false,
+  frame=single,
+  breaklines=true, % spezza le righe lunghe...
+  breakindent=10pt, % ...impostando l'indentazione delle continuazioni a 10pt
+  % aggiungo manualmente la "conversione" in comandi LaTeX per tutti i simboli
+  % "strani" presenti nei sorgenti che includo usando il pacchetto `listings'
+  literate=
+  {à}{{\`a}}1
+  {è}{{\`e}}1
+  {È}{{\`e}}1
+  {é}{{\'e}}1
+  {ì}{{\`i}}1
+  {ò}{{\`o}}1
+  {ù}{{\`u}}1
+  {·}{{\textperiodcentered}}1
+  {×}{{\texttimes}}1
+  {²}{{\ap{2}}}1
+  {º}{{\textdegree}}1
+}
+
+
 \begin{document}
 \begin{frame}[plain]
   \maketitle
+\end{frame}
+
+\begin{frame}
+  \frametitle{The goal of Wiener filtering}
+  Remove distortion and noise from degraded images, audio signals, etc.
+  \begin{figure}
+    \centering
+    \(\vcenter{\hbox{\includegraphics[width=0.2\textwidth]{moon.jpg}}}\) ~
+    \tikz{\draw[-latex,mm2skyblue,thick] (0,0) -- node[above] {Degradation}
+      (1.7,0);} ~
+    \(\vcenter{\hbox{\includegraphics[width=0.2\textwidth]{figures/degraded_moon.jpg}}}\)
+    ~
+    \tikz{\draw[-latex,mm2skyblue,thick] (0,0) -- node[above] {Filtering}
+      (1.7,0);} ~
+    \(\vcenter{\hbox{\includegraphics[width=0.2\textwidth]{figures/filtered_moon.jpg}}}\)
+    \caption{Picture of the Moon taken by the Galileo spacecraft on 7 December 1992}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Wiener filter applied to a temporal signal}
+  \lstinputlisting[linerange={13-35}]{filtro_wiener.pro}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Wiener filter applied to a temporal signal (cont.)}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/signal}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Wiener filter applied to a temporal signal (cont.)}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/signal-noise}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Wiener filter applied to a temporal signal (cont.)}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/result}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Wiener filter applied to an image}
+  \lstinputlisting[linerange={51-74}]{filtro_wiener.pro}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Wiener filter applied to an image (cont.)}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{lena}
+    \caption{The original image, file \texttt{lena.jpg}}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Wiener filter applied to an image (cont.)}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/degraded_lena}
+    \caption{The image has been degraded with a large noise}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Wiener filter applied to an image (cont.)}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{elaine}
+    \caption{The picture used to filter the degraded image, file
+      \texttt{elaine.jpg}}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Wiener filter applied to an image (cont.)}
+  We can use a different picture to filter the degraded image because they have
+  a similar power spectra
+  \begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/power-spectra}
+    \caption{Left: power spectrum of \texttt{lena.jpg} file; right: power
+      spectrum of \texttt{elaine.jpg} file}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Wiener filter applied to an image (cont.)}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/filtered_lena}
+    \caption{The filtered image}
+  \end{figure}
 \end{frame}
 \end{document}
 
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: t
+%%% ispell-local-dictionary: "american"
 %%% End:

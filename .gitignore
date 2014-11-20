@@ -1,6 +1,9 @@
-*.dat
 *.aux
+*.bbl
 *.bcf
+*.blg
+*.fdb_latexmk
+*.fls
 *.log
 *.nav
 *.out
@@ -9,3 +12,9 @@
 *.snm
 *.synctex.gz
 *.toc
+auto/
+figures/*.dat
+figures/degraded_*.jpg
+figures/filtered_*.jpg
+figures/*-inc.eps
+figures/*.tex
