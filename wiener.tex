@@ -9,7 +9,7 @@
 \usepackage[utf8]{inputenc}
 
 \usepackage[hyperref,backend=biber,maxbibnames=4,firstinits=true]{biblatex}
-\usepackage{graphicx,tikz,listings}
+\usepackage{graphicx,tikz,listings,bm,braket}
 \usepackage[font=scriptsize,labelformat=empty]{caption}
 
 \addbibresource{bibliography.bib}
@@ -160,7 +160,7 @@
 
 \begin{frame}
   \frametitle{The goal of Wiener filtering}
-  Remove distortion and noise from degraded images, audio signals, etc.
+  Reduce degradation and noise in an image, audio signals, etc.
   \begin{figure}
     \centering
     \(\vcenter{\hbox{\includegraphics[width=0.2\textwidth]{moon.jpg}}}\) ~
@@ -176,7 +176,35 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{The theory}
+  Suppose you have a signal \(S(\bm{t})\) in the time domain (whatever ``time''
+  is: actual time, point in space, pixel of an image, etc), blurred by a shift
+  invariant function \(B(\bm{t})\) and with an additive noise \(N(\bm{t})\)
+  \begin{equation*}
+    X(\bm{t}) = (B * S)(\bm{t}) + N(\bm{t})
+  \end{equation*}
+  Its Fourier transform in the frequency domain is denoted by \(\hat{X}(\bm{f})
+  = \mathcal{F}(X)(\bm{f})\).  We want to find an appropriate filter
+  \(W(\bm{f})\) such that the function \(Y(\bm{f}) = W(\bm{f})\hat{X}(\bm{f})\)
+  is as much close as possible to the Fourier transform of the original signal
+  \(\hat{S}(\bm{f}) = \mathcal{F}(S)(\bm{f})\), i.e. we want to minimize the
+  quantity
+  \begin{equation*}
+    \Braket{W(\bm{f})\hat{X}(\bm{f}) - \hat{S}(\bm{f})} =
+    \Braket{W(\bm{f})(\hat{B}(\bm{f})\hat{S}(\bm{f}) + \hat{N}(\bm{f})) -
+      \hat{S}(\bm{f})}
+  \end{equation*}
+  This condition is fulfilled by
+  \begin{equation*}
+    W(\bm{f}) = \frac{\hat{B}^{*}(\bm{f})}{|\hat{B}(\bm{f})|^{2} +
+      |\hat{N}(\bm{f})|^{2}/|\hat{S}(\bm{f})|^{2}}
+  \end{equation*}
+  This is the \alert{Wiener filter} function
+\end{frame}
+
+\begin{frame}
   \frametitle{Wiener filter applied to a temporal signal}
+  IDL/GDL code:
   \lstinputlisting[linerange={13-35}]{filtro_wiener.pro}
 \end{frame}
 
@@ -184,7 +212,7 @@
   \frametitle{Wiener filter applied to a temporal signal (cont.)}
   \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/signal}
+    \includegraphics[width=0.85\textwidth]{figures/signal}
   \end{figure}
 \end{frame}
 
@@ -192,7 +220,7 @@
   \frametitle{Wiener filter applied to a temporal signal (cont.)}
   \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/signal-noise}
+    \includegraphics[width=0.85\textwidth]{figures/signal-noise}
   \end{figure}
 \end{frame}
 
@@ -200,12 +228,13 @@
   \frametitle{Wiener filter applied to a temporal signal (cont.)}
   \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/result}
+    \includegraphics[width=0.85\textwidth]{figures/result}
   \end{figure}
 \end{frame}
 
 \begin{frame}
   \frametitle{Wiener filter applied to an image}
+  IDL/GDL code:
   \lstinputlisting[linerange={51-74}]{filtro_wiener.pro}
 \end{frame}
 
@@ -213,7 +242,7 @@
   \frametitle{Wiener filter applied to an image (cont.)}
   \begin{figure}
     \centering
-    \includegraphics[width=0.6\textwidth]{lena}
+    \includegraphics[width=0.55\textwidth]{lena}
     \caption{The original image, file \texttt{lena.jpg}}
   \end{figure}
 \end{frame}
@@ -222,7 +251,7 @@
   \frametitle{Wiener filter applied to an image (cont.)}
   \begin{figure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/degraded_lena}
+    \includegraphics[width=0.55\textwidth]{figures/degraded_lena}
     \caption{The image has been degraded with a large noise}
   \end{figure}
 \end{frame}
@@ -231,7 +260,7 @@
   \frametitle{Wiener filter applied to an image (cont.)}
   \begin{figure}
     \centering
-    \includegraphics[width=0.6\textwidth]{elaine}
+    \includegraphics[width=0.55\textwidth]{elaine}
     \caption{The picture used to filter the degraded image, file
       \texttt{elaine.jpg}}
   \end{figure}
@@ -240,7 +269,7 @@
 \begin{frame}
   \frametitle{Wiener filter applied to an image (cont.)}
   We can use a different picture to filter the degraded image because they have
-  a similar power spectra
+  similar power spectra
   \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{figures/power-spectra}
@@ -253,7 +282,7 @@
   \frametitle{Wiener filter applied to an image (cont.)}
   \begin{figure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/filtered_lena}
+    \includegraphics[width=0.55\textwidth]{figures/filtered_lena}
     \caption{The filtered image}
   \end{figure}
 \end{frame}
