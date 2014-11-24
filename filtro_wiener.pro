@@ -1,12 +1,12 @@
 ;; Compatibility function for IDL/GDLs without /CENTER keyword.
-function fft_center, array, direction, DIMENSION=dimension, DOUBLE=double, $
-                     INVERSE=inverse, OVERWRITE=overwrite
+function fft_2d_center, array, direction, DIMENSION=dimension, DOUBLE=double, $
+                        INVERSE=inverse, OVERWRITE=overwrite
   on_error, 2
   if n_elements(direction) le 0 then direction=-1
-  return, shift( $
-          fft(array, direction, DIMENSION=dimension, DOUBLE=double, $
-              INVERSE=inverse, OVERWRITE=overwrite), $
-          ceil(n_elements(array)/2 + 1))
+  dimensions=size(array, /dimensions)
+  return, shift(fft(array, direction, DIMENSION=dimension, DOUBLE=double, $
+                    INVERSE=inverse, OVERWRITE=overwrite), $
+                ceil(dimensions[0]/2 + 1), ceil(dimensions[1]/2 + 1))
 end
 
 pro filtro_wiener
