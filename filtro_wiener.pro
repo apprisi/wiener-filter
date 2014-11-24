@@ -3,10 +3,10 @@ function fft_2d_center, array, direction, DIMENSION=dimension, DOUBLE=double, $
                         INVERSE=inverse, OVERWRITE=overwrite
   on_error, 2
   if n_elements(direction) le 0 then direction=-1
-  dimensions=size(array, /dimensions)
+  shift_param=ceil(size(array, /dimensions)/2 + 1)
   return, shift(fft(array, direction, DIMENSION=dimension, DOUBLE=double, $
                     INVERSE=inverse, OVERWRITE=overwrite), $
-                ceil(dimensions[0]/2 + 1), ceil(dimensions[1]/2 + 1))
+                shift_param[0], shift_param[1])
 end
 
 pro filtro_wiener
@@ -96,21 +96,21 @@ pro filtro_wiener
   yCoords = transpose(xCoords)
   k = 0.0025
   degradation = exp(-k*(xCoords^2 + yCoords^2)^(5d/6d))
-  imageDegraded = degradation*fft(moon, /center) + fft(moon_noise, /center)
+  imageDegraded = degradation*fft_2d_center(moon) + fft_2d_center(moon_noise)
   ;; Filter the degraded image with the Wiener filter
-  powerClean = abs(fft(moon, /center))^2
-  powerNoise = abs(fft(moon_noise, /center))^2
+  powerClean = abs(fft_2d_center(moon))^2
+  powerNoise = abs(fft_2d_center(moon_noise))^2
   degradationConjugate = conj(degradation)
-  imageFiltered = real_part( $
-                  fft( $
+  imageFiltered = fft( $
                   degradationconjugate/(degradation* $
                                         degradationconjugate + powerNoise/ $
                                         powerClean)*imageDegraded, $
-                  /inverse, /center))
+                  /inverse, /center)
+  
   ;; Hide any divide by zero errors
   void = CHECK_MATH(MASK=16)
 
-  imageDegraded = real_part(fft(imageDegraded, /inverse, /center))
+  imageDegraded = fft(imageDegraded, /inverse, /center)
   write_jpeg, 'figures/degraded_moon.jpg', imageDegraded
   write_jpeg, 'figures/filtered_moon.jpg', imageFiltered
   return
