@@ -18,7 +18,7 @@
 \newcommand{\doi}[1]{{\usebeamercolor[fg]{bibliography entry note}
     \href{http://dx.doi.org/#1}{\textsc{doi}: \texttt{#1}}}}
 
-\title{Wiener Filtering}
+\title{Introduction to Wiener Filtering}
 
 \author{Mosè Giordano}
 \date{26 November 2014}
@@ -159,8 +159,8 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{The goal of Wiener filtering}
-  Reduce degradation and noise in an image, audio signals, etc.
+  \frametitle{The purpose of Wiener filtering}
+  Reduce degradation and noise in images, audio signals, etc.
   \begin{figure}
     \centering
     \(\vcenter{\hbox{\includegraphics[width=0.2\textwidth]{moon.jpg}}}\) ~
@@ -177,18 +177,26 @@
 
 \begin{frame}
   \frametitle{The theory}
-  Suppose you have a signal \(S(\bm{t})\) in the time domain (whatever ``time''
-  is: actual time, point in space, pixel of an image, etc), blurred by a shift
-  invariant function \(B(\bm{t})\) and with an additive noise \(N(\bm{t})\)
+  Suppose you have a \alert{signal} \(S(\bm{t})\) in the time domain (whatever
+  ``time'' is: actual time, point in space, pixel of an image, etc), degraded by
+  \alert{known blurring shift-invariant function} \(B(\bm{t})\) and
+  \alert{additive noise} \(N(\bm{t})\)
   \begin{equation*}
     X(\bm{t}) = (B * S)(\bm{t}) + N(\bm{t})
   \end{equation*}
-  Its Fourier transform in the frequency domain is denoted by \(\hat{X}(\bm{f})
-  = \mathcal{F}(X)(\bm{f})\).  We want to find an appropriate filter
-  \(W(\bm{f})\) such that the function \(Y(\bm{f}) = W(\bm{f})\hat{X}(\bm{f})\)
-  is as much close as possible to the Fourier transform of the original signal
-  \(\hat{S}(\bm{f}) = \mathcal{F}(S)(\bm{f})\), i.e. we want to minimize the
-  quantity
+  Its Fourier transform in the frequency domain is
+  \begin{equation*}
+    \hat{X}(\bm{f}) = \mathcal{F}(X)(\bm{f}) = \hat{B}(\bm{f})\hat{S}(\bm{f}) +
+    \hat{N}(\bm{f})
+  \end{equation*}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The theory (cont.)}
+  We want to find an appropriate filter \(W(\bm{f})\) such that the function
+  \(W(\bm{f})\hat{X}(\bm{f})\) is as much close as possible to the Fourier
+  transform of the original signal \(\hat{S}(\bm{f}) = \mathcal{F}(S)(\bm{f})\),
+  i.e. we want to minimize the quantity
   \begin{equation*}
     \Braket{W(\bm{f})\hat{X}(\bm{f}) - \hat{S}(\bm{f})} =
     \Braket{W(\bm{f})(\hat{B}(\bm{f})\hat{S}(\bm{f}) + \hat{N}(\bm{f})) -
@@ -199,7 +207,35 @@
     W(\bm{f}) = \frac{\hat{B}^{*}(\bm{f})}{|\hat{B}(\bm{f})|^{2} +
       |\hat{N}(\bm{f})|^{2}/|\hat{S}(\bm{f})|^{2}}
   \end{equation*}
-  This is the \alert{Wiener filter} function
+  This is the \alert{Wiener filter} function and
+  \(\mathcal{F}^{-1}(W\hat{X})(\bm{t})\) is the \alert{filtered signal}.  This
+  function gives more importance to frequencies with \alert{higher signal to
+    noise ratio}.  In absence of blurring
+  \begin{equation*}
+    W(\bm{f}) = \frac{|\hat{S}(\bm{f})|^{2}}{|\hat{S}(\bm{f})|^{2} +
+      |\hat{N}(\bm{f})|^{2}}
+  \end{equation*}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The theory (cont.)}
+  Theoretically, in order to calculate the Wiener filter function we need to
+  know
+  \begin{itemize}
+  \item the original signal
+  \item the blurring function
+  \item the noise
+  \end{itemize}
+  or at least their power spectra.  Actually, power spectra need not to be known
+  exactly (noise power spectrum can often be easily estimated, e.g. white noise
+  has constant spectrum) because
+  \begin{itemize}
+  \item most signals of the same class have fairly similar power spectra
+  \item the Wiener filter is insensitive to small variations in the original
+    signal power spectrum
+  \end{itemize}
+  We can estimate the original signal power spectrum using a representative of
+  the class of signals being filtered
 \end{frame}
 
 \begin{frame}
@@ -285,6 +321,12 @@
     \includegraphics[width=0.55\textwidth]{figures/filtered_lena}
     \caption{The filtered image}
   \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\refname}
+  \nocite{*}
+  \printbibliography{}
 \end{frame}
 \end{document}
 
