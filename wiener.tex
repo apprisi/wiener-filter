@@ -184,7 +184,8 @@
   \begin{equation*}
     X(\bm{t}) = (B * S)(\bm{t}) + N(\bm{t})
   \end{equation*}
-  Its Fourier transform in the frequency domain is
+  The Fourier transform in the frequency domain of this \alert{noisy signal}
+  \(X(\bm{t})\) is
   \begin{equation*}
     \hat{X}(\bm{f}) = \mathcal{F}(X)(\bm{f}) = \hat{B}(\bm{f})\hat{S}(\bm{f}) +
     \hat{N}(\bm{f})
@@ -227,21 +228,21 @@
   \item the noise
   \end{itemize}
   or at least their power spectra.  Actually, power spectra need not to be known
-  exactly (noise power spectrum can often be easily estimated, e.g. white noise
-  has constant spectrum) because
+  exactly (\alert{noise power spectrum can often be easily estimated},
+  e.g. white noise has constant spectrum) because
   \begin{itemize}
-  \item most signals of the same class have fairly similar power spectra
-  \item the Wiener filter is insensitive to small variations in the original
-    signal power spectrum
+  \item most signals of the same class have fairly \alert{similar power spectra}
+  \item the Wiener filter is \alert{insensitive to small variations} in the
+    original signal power spectrum
   \end{itemize}
-  We can estimate the original signal power spectrum using a representative of
-  the class of signals being filtered
+  We can estimate the original signal power spectrum using a
+  \alert{representative of the class of signals being filtered}
 \end{frame}
 
 \begin{frame}
   \frametitle{Wiener filter applied to a temporal signal}
   IDL/GDL code:
-  \lstinputlisting[linerange={13-35}]{filtro_wiener.pro}
+  \lstinputlisting[linerange={25-47}]{filtro_wiener.pro}
 \end{frame}
 
 \begin{frame}
@@ -271,7 +272,7 @@
 \begin{frame}
   \frametitle{Wiener filter applied to an image}
   IDL/GDL code:
-  \lstinputlisting[linerange={51-74}]{filtro_wiener.pro}
+  \lstinputlisting[linerange={64-88}]{filtro_wiener.pro}
 \end{frame}
 
 \begin{frame}

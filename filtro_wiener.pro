@@ -2,14 +2,26 @@
 function fft_2d_center, array, direction, DIMENSION=dimension, DOUBLE=double, $
                         INVERSE=inverse, OVERWRITE=overwrite
   on_error, 2
-  if n_elements(direction) le 0 then direction=-1
-  shift_param=ceil(size(array, /dimensions)/2 + 1)
-  return, shift(fft(array, direction, DIMENSION=dimension, DOUBLE=double, $
-                    INVERSE=inverse, OVERWRITE=overwrite), $
-                shift_param[0], shift_param[1])
+  if n_elements(direction) le 0 then direction = -1
+  if n_elements(inverse) le 0 then inverse = 0
+  if (direction gt 0) or (inverse) then begin
+     ;; Inverse transform: shift backward the input array.
+     shift_param = -ceil(size(array, /dimensions)/2 + 1)
+     transform = fft(shift(array, shift_param[0], shift_param[1]), $
+                     direction, DIMENSION=dimension, DOUBLE=double, $
+                     INVERSE=inverse, OVERWRITE=overwrite)
+  endif else begin
+     ;; Forward transform: shift forward the transform.
+     shift_param = ceil(size(array, /dimensions)/2 + 1)
+     transform = shift(fft(array, direction, DIMENSION=dimension, DOUBLE=double, $
+                           INVERSE=inverse, OVERWRITE=overwrite), $
+                       shift_param[0], shift_param[1])
+  endelse
+  return, transform
 end
 
 pro filtro_wiener
+  on_error, 2
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;;;;;;;;;  Signal  ;;;;;;;;;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -62,14 +74,15 @@ pro filtro_wiener
   ;; For the Wiener filter, use a completely different picture.
   read_jpeg, "elaine.jpg", elaine, /grayscale
   ;; Determine the power spectrum of Elaine.
-  elaine_power_spectrum=abs(fft(elaine))^2
+  elaine_power_spectrum = abs(fft(elaine))^2
   ;; To further increase entropy, calculate a new noise.
-  img_noise_new=2d*mean(lena)*randomu(systime(/seconds), 512, 512)
+  img_noise_new = 2d*mean(lena)*randomu(systime(/seconds), 512, 512)
   ;; Power spectrum of the new noise.
-  img_noise_power_spectrum=abs(fft(img_noise_new))^2
+  img_noise_power_spectrum = abs(fft(img_noise_new))^2
   
   ;; Calculate the Wiener filter.
-  filter = elaine_power_spectrum/(elaine_power_spectrum + img_noise_power_spectrum)
+  filter = elaine_power_spectrum/(elaine_power_spectrum + $
+                                  img_noise_power_spectrum)
   ;; Get the filtered picture.
   result_img = fft(ftimg*filter, /inverse)
 
@@ -81,7 +94,7 @@ pro filtro_wiener
   printf, 1, shift(elaine_power_spectrum, 257, 257), format='(512(f10.3,x))'
   close, 1
   openw, 1, 'figures/lena.dat'
-  printf, 1, shift(abs(fft(lena))^2, 257, 257), format='(512(f10.3,x))'
+  printf, 1, abs(fft_2d_center(lena))^2, format='(512(f10.3,x))'
   close, 1
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -101,16 +114,16 @@ pro filtro_wiener
   powerClean = abs(fft_2d_center(moon))^2
   powerNoise = abs(fft_2d_center(moon_noise))^2
   degradationConjugate = conj(degradation)
-  imageFiltered = fft( $
+  imageFiltered = fft_2d_center( $
                   degradationconjugate/(degradation* $
                                         degradationconjugate + powerNoise/ $
                                         powerClean)*imageDegraded, $
-                  /inverse, /center)
+                  /inverse)
   
   ;; Hide any divide by zero errors
   void = CHECK_MATH(MASK=16)
 
-  imageDegraded = fft(imageDegraded, /inverse, /center)
+  imageDegraded = fft_2d_center(imageDegraded, /inverse)
   write_jpeg, 'figures/degraded_moon.jpg', imageDegraded
   write_jpeg, 'figures/filtered_moon.jpg', imageFiltered
   return
