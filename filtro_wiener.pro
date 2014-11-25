@@ -22,9 +22,9 @@ end
 
 pro filtro_wiener
   on_error, 2
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;;;;;;;  Signal  ;;;;;;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;  Temporal Signal  ;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ntime = 1001
   ff = 100
   ;; Define the times array.
@@ -32,7 +32,7 @@ pro filtro_wiener
   ;; The orignal signal.
   sign = sin(time) - 0.7*cos(0.7*time) + 0.5*sin(0.5*time)^2
   ;; The noise.
-  noise = 0.3*randomu(a, ntime)*cos(10*randomu(a, ntime)*time)
+  noise = 0.3*randomu(null, ntime)*cos(10*randomu(null, ntime)*time)
   ;; Signal + noise.
   sign_noise = sign + noise
   ;; Its Fourier transform.
