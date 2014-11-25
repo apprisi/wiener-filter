@@ -1,6 +1,8 @@
 IDL = gdl
-CLEAN_FILES = *.aux *.bbl *.bcf *.blg *.log *.nav *.out *.run.xml *.snm \
-	      *.synctex.gz *.toc figures/*-inc.eps figures/*.tex
+CLEAN_FILES = *.aux *.bbl *.bcf *.blg *.fdb_latexmk *.fls *.log *.nav *.out \
+	      *.run.xml *.snm *.synctex.gz *.toc figures/*.aux \
+	      figures/*-inc.eps figures/*-inc-eps-converted-to.pdf \
+	      figures/*.log figures/*.tex
 DISTCLEAN_FILES = degraded_*.jpg filtered_*.jpg *.dat figures/signal.pdf \
 		  figures/signal-noise.pdf figures/result.pdf
 
