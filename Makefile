@@ -10,8 +10,11 @@ DISTCLEAN_FILES = degraded_*.jpg filtered_*.jpg *.dat figures/signal.pdf \
 
 all: wiener.pdf
 
-wiener.pdf: figures/signal.pdf figures/power-spectra.pdf wiener.tex
+wiener.pdf: figures/img-filter.pdf figures/signal.pdf figures/power-spectra.pdf wiener.tex
 	latexmk -pdf wiener
+
+figures/img-filter.pdf: figures/img-filter.gnuplot figures/img-filter.dat
+	cd figures && gnuplot img-filter.gnuplot
 
 figures/signal.pdf: figures/signal.gnuplot figures/signal.dat
 	cd figures && gnuplot signal.gnuplot

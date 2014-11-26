@@ -56,7 +56,8 @@ pro filtro_wiener
   openw, 1, 'figures/signal.dat'
   for ii = 0L, ntime - 1L do begin
      printf, 1, time[ii], freq[ii], sign[ii], noise[ii], sign_noise[ii], $
-             abs(ft[ii]), real_part(result[ii]), format='(7f20.8)'
+             signal_power_spectrum[ii], noise_power_spectrum[ii], $
+             real_part(result[ii]), filter[ii], format='(9f20.8)'
   endfor
   close, 1
 
@@ -95,6 +96,9 @@ pro filtro_wiener
   close, 1
   openw, 1, 'figures/lena.dat'
   printf, 1, abs(fft_2d_center(lena))^2, format='(512(f10.3,x))'
+  close, 1
+  openw, 1, 'figures/img-filter.dat'
+  printf, 1, shift(filter, 257, 257), format='(512(f10.3,x))'
   close, 1
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
